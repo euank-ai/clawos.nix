@@ -28,6 +28,23 @@ in
 
   services.openssh.enable = true;
 
+  # Stay always-on: disable suspend/hibernate/sleep actions.
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
+
+  services.logind.settings.Login = {
+    IdleAction = "ignore";
+    HandleSuspendKey = "ignore";
+    HandleHibernateKey = "ignore";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+  };
+
   # Ensure initrd has NIC drivers so SSH unlock works.
   boot.initrd.availableKernelModules = lib.mkAfter [ "r8169" "mt7925e" ];
   boot.initrd.kernelModules = [ "r8169" "mt7925e" ];
@@ -57,7 +74,41 @@ in
     gcc
     gnumake
     pkg-config
+    git
+    gh
+    firefox
+    chromium
+    xdg-utils
+    sops
+    age
   ];
+
+  sops = {
+    defaultSopsFile = ./secrets/openclaw.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/claw/.config/sops/age/keys.txt";
+
+    secrets.discord_bot_token = {
+      owner = "claw";
+      group = "users";
+      mode = "0400";
+    };
+
+    templates."openclaw-gateway.env" = {
+      owner = "claw";
+      group = "users";
+      mode = "0400";
+      content = ''
+        DISCORD_BOT_TOKEN=${config.sops.placeholder.discord_bot_token}
+      '';
+    };
+  };
+
+  systemd.user.services.openclaw-gateway = {
+    overrideStrategy = "asDropin";
+    serviceConfig.EnvironmentFile = [ config.sops.templates."openclaw-gateway.env".path ];
+    restartTriggers = [ config.sops.templates."openclaw-gateway.env".file ];
+  };
 
   environment.sessionVariables = {
     NPM_CONFIG_PREFIX = "/home/claw/.npm-global";
