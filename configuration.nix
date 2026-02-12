@@ -49,5 +49,9 @@ in
 
   security.sudo.wheelNeedsPassword = false;
 
+  environment.systemPackages = with pkgs; [
+    codex
+  ];
+
   system.stateVersion = "25.11";
 }
