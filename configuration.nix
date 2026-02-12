@@ -30,6 +30,7 @@ in
 
   # Ensure initrd has NIC drivers so SSH unlock works.
   boot.initrd.availableKernelModules = lib.mkAfter [ "r8169" "mt7925e" ];
+  boot.initrd.kernelModules = [ "r8169" "mt7925e" ];
 
   boot.initrd.network = {
     enable = true;
@@ -51,7 +52,20 @@ in
 
   environment.systemPackages = with pkgs; [
     codex
+    nodejs_22
+    cmake
+    gcc
+    gnumake
+    pkg-config
   ];
+
+  environment.sessionVariables = {
+    NPM_CONFIG_PREFIX = "/home/claw/.npm-global";
+  };
+
+  environment.shellInit = ''
+    export PATH="/home/claw/.npm-global/bin:$PATH"
+  '';
 
   system.stateVersion = "25.11";
 }
