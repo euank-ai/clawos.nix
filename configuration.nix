@@ -13,6 +13,11 @@ in
 {
   imports = [ ./hardware-configuration.nix ];
 
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "ngrok"
+    ];
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -81,6 +86,12 @@ in
     xdg-utils
     sops
     age
+    rustc
+    cargo
+    ngrok
+    vim
+    neovim
+    tig
   ];
 
   sops = {
