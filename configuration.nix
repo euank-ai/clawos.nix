@@ -88,7 +88,13 @@ in
     age
     rustc
     cargo
+    rustfmt
+    clippy
+    awscli2
+    python3
+    sqlite
     ngrok
+    go
     vim
     neovim
     tig
