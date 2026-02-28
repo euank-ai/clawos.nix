@@ -23,6 +23,7 @@
           {
             environment.systemPackages = [
               ankiweb-cli.packages.${system}.default
+              nixpkgs.legacyPackages.${system}.oath-toolkit
             ];
           }
         ];
