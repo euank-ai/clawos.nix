@@ -5,9 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    ankiweb-cli.url = "github:euank-ai/ankiweb-cli";
+    ankiweb-cli.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, sops-nix }:
+  outputs = { self, nixpkgs, sops-nix, ankiweb-cli }:
     let
       system = "x86_64-linux";
     in
@@ -18,6 +20,11 @@
           ./hardware-configuration.nix
           sops-nix.nixosModules.sops
           ./configuration.nix
+          {
+            environment.systemPackages = [
+              ankiweb-cli.packages.${system}.default
+            ];
+          }
         ];
       };
     };
