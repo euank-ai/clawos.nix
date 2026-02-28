@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772279384,
-        "narHash": "sha256-YUdH1SZwwUuRcwXYO8qoPkVLipP2KE9rRCX+RLrzeok=",
+        "lastModified": 1772280278,
+        "narHash": "sha256-NPAcdFOrQrqdk1musUZ4FLfBz0BT3w+s0jR4m4xmgz0=",
         "owner": "euank-ai",
         "repo": "ankiweb-cli",
-        "rev": "e148f9ca5de1658587a57259c57650a32c53fa73",
+        "rev": "5de8d0cde6e2e12e846bcb4bd53898c7fd91fe06",
         "type": "github"
       },
       "original": {
