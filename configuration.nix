@@ -98,6 +98,8 @@ in
     vim
     neovim
     tig
+    tmux
+    oath-toolkit
   ];
 
   sops = {
