@@ -84,6 +84,7 @@ in
     gh
     firefox
     chromium
+    google-chrome
     xdg-utils
     sops
     age
