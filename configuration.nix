@@ -16,6 +16,7 @@ in
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "ngrok"
+      "google-chrome"
     ];
 
   boot.loader.systemd-boot.enable = true;
