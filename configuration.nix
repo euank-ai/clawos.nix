@@ -125,6 +125,7 @@ in
 
   systemd.user.services.openclaw-gateway = {
     overrideStrategy = "asDropin";
+    path = with pkgs; [ git nodejs_22 openssh ];
     serviceConfig.EnvironmentFile = [ config.sops.templates."openclaw-gateway.env".path ];
     restartTriggers = [ config.sops.templates."openclaw-gateway.env".file ];
   };
