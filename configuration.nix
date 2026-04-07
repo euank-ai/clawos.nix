@@ -74,6 +74,7 @@ in
 
   environment.systemPackages = with pkgs; [
     codex
+    gemini-cli
     nodejs_22
     cmake
     gcc
