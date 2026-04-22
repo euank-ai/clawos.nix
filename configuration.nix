@@ -21,10 +21,26 @@ in
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # linuxPackages_latest currently resolves to 7.0 here, and initrd build fails
-  # because aes_generic is not present as a separate module in that module set.
-  # Pin to the currently working kernel family.
-  boot.kernelPackages = pkgs.linuxPackages_6_19;
+  # nixpkgs' default LUKS initrd cryptoModules still includes aes_generic,
+  # but linux 7.0 no longer exposes it as a separate module. Override the
+  # list to drop aes_generic so linuxPackages_latest builds again.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.initrd.luks.cryptoModules = [
+    "aes"
+    "blowfish"
+    "twofish"
+    "serpent"
+    "cbc"
+    "xts"
+    "lrw"
+    "sha1"
+    "sha256"
+    "sha512"
+    "af_alg"
+    "algif_skcipher"
+    "cryptd"
+    "input_leds"
+  ];
 
   networking.hostName = "clawmachine";
   networking.networkmanager.enable = true;
