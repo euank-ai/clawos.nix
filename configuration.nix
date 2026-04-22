@@ -21,7 +21,10 @@ in
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # linuxPackages_latest currently resolves to 7.0 here, and initrd build fails
+  # because aes_generic is not present as a separate module in that module set.
+  # Pin to the currently working kernel family.
+  boot.kernelPackages = pkgs.linuxPackages_6_19;
 
   networking.hostName = "clawmachine";
   networking.networkmanager.enable = true;
