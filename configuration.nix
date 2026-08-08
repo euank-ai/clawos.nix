@@ -135,7 +135,7 @@ in
       mode = "0400";
     };
 
-    templates."openclaw-gateway.env" = {
+    templates."hermes-gateway.env" = {
       owner = "claw";
       group = "users";
       mode = "0400";
@@ -145,11 +145,50 @@ in
     };
   };
 
+  services.hermes-agent = {
+    enable = true;
+    user = "claw";
+    group = "users";
+    createUser = false;
+    stateDir = "/home/claw/.local/share/hermes-agent";
+    workingDirectory = "/home/claw";
+    addToSystemPackages = true;
+    extraDependencyGroups = [ "messaging" ];
+    environmentFiles = [ config.sops.templates."hermes-gateway.env".path ];
+    extraPackages = with pkgs; [
+      git
+      gh
+      jq
+      openssh
+      nodejs_22
+      awscli2
+      chromium
+    ];
+  };
+
+  # Keep the old per-user gateways inert. Their imperative unit files are
+  # removed during migration; these static blocker units prevent accidental
+  # reactivation afterwards.
   systemd.user.services.openclaw-gateway = {
-    overrideStrategy = "asDropin";
-    path = with pkgs; [ git nodejs_22 openssh ];
-    serviceConfig.EnvironmentFile = [ config.sops.templates."openclaw-gateway.env".path ];
-    restartTriggers = [ config.sops.templates."openclaw-gateway.env".file ];
+    unitConfig = {
+      Description = "OpenClaw gateway is disabled (migrated to Hermes)";
+      RefuseManualStart = true;
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.coreutils}/bin/false";
+    };
+  };
+
+  systemd.user.services.hermes-gateway = {
+    unitConfig = {
+      Description = "Legacy Hermes user gateway is disabled (managed by NixOS system service)";
+      RefuseManualStart = true;
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.coreutils}/bin/false";
+    };
   };
 
   environment.sessionVariables = {
