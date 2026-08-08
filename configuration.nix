@@ -155,6 +155,7 @@ in
     addToSystemPackages = true;
     extraDependencyGroups = [ "messaging" ];
     environmentFiles = [ config.sops.templates."hermes-gateway.env".path ];
+    environment.DISCORD_ALLOWED_USERS = "283820791370612736";
     extraPackages = with pkgs; [
       git
       gh
