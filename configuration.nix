@@ -102,6 +102,7 @@ in
     pkg-config
     git
     gh
+    jq
     firefox
     chromium
     google-chrome
@@ -156,6 +157,7 @@ in
     extraDependencyGroups = [ "messaging" ];
     environmentFiles = [ config.sops.templates."hermes-gateway.env".path ];
     environment.DISCORD_ALLOWED_USERS = "283820791370612736";
+    settings.discord.require_mention = false;
     extraPackages = with pkgs; [
       git
       gh
@@ -165,6 +167,14 @@ in
       awscli2
       chromium
     ];
+  };
+
+  # Hermes runs as `claw`, which is in wheel with passwordless sudo. The
+  # upstream unit hardening otherwise blocks setuid sudo and keeps the system
+  # filesystem read-only even after elevation.
+  systemd.services.hermes-agent.serviceConfig = {
+    NoNewPrivileges = lib.mkForce false;
+    ProtectSystem = lib.mkForce false;
   };
 
   # Keep the old per-user gateways inert. Their imperative unit files are
