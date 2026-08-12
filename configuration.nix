@@ -177,6 +177,34 @@ in
     ProtectSystem = lib.mkForce false;
   };
 
+  # Run host maintenance outside hermes-agent.service's cgroup. A NixOS switch
+  # restarts Hermes, so running nixos-rebuild directly from an agent session
+  # kills the rebuild halfway through activation.
+  systemd.services.nixos-weekly-maintenance = {
+    description = "Weekly NixOS flake update, validation, switch, commit, and push";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "claw";
+      Group = "users";
+      WorkingDirectory = "/home/claw/nixos-flake";
+      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/nixos-weekly-maintenance.sh}";
+      TimeoutStartSec = "2h";
+    };
+    path = with pkgs; [ git nix coreutils util-linux ];
+    environment.HOME = "/home/claw";
+  };
+
+  systemd.timers.nixos-weekly-maintenance = {
+    description = "Run weekly NixOS maintenance";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "Sun *-*-* 03:30:00";
+      Persistent = true;
+      RandomizedDelaySec = "5m";
+      Unit = "nixos-weekly-maintenance.service";
+    };
+  };
+
   # Keep the old per-user gateways inert. Their imperative unit files are
   # removed during migration; these static blocker units prevent accidental
   # reactivation afterwards.
