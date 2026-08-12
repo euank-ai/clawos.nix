@@ -14,6 +14,10 @@ DATE=/run/current-system/sw/bin/date
 MKDIR=/run/current-system/sw/bin/mkdir
 FLOCK=/run/current-system/sw/bin/flock
 
+# Nix itself shells out to git while updating/evaluating Git flakes. Keep a
+# deterministic PATH even in transient or timer services with a minimal env.
+export PATH="/run/current-system/sw/bin:/run/wrappers/bin"
+
 $MKDIR -p "$STATE_DIR"
 exec 9>"$STATE_DIR/nixos-weekly-maintenance.lock"
 if ! $FLOCK -n 9; then
