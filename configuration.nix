@@ -157,7 +157,34 @@ in
     extraDependencyGroups = [ "messaging" ];
     environmentFiles = [ config.sops.templates."hermes-gateway.env".path ];
     environment.DISCORD_ALLOWED_USERS = "283820791370612736";
-    settings.discord.require_mention = false;
+    settings = {
+      discord.require_mention = false;
+
+      # Search uses the authenticated Codex-native backend. Extraction must
+      # use an extraction-capable provider rather than inheriting search.
+      web = {
+        backend = "";
+        search_backend = "openai-native";
+        extract_backend = "keenable";
+        keyless_fallback = true;
+        keyless_rescue = true;
+      };
+
+      # Keep the existing enabled toolsets while dropping the retired `bfl`
+      # toolset that older Hermes versions wrote into both platform lists.
+      platform_toolsets = {
+        cli = [
+          "browser" "clarify" "code_execution" "computer_use" "cronjob"
+          "delegation" "file" "image_gen" "memory" "session_search"
+          "skills" "terminal" "todo" "tts" "vision" "web"
+        ];
+        discord = [
+          "browser" "clarify" "code_execution" "computer_use" "cronjob"
+          "delegation" "file" "image_gen" "memory" "session_search"
+          "skills" "terminal" "todo" "tts" "vision" "web"
+        ];
+      };
+    };
     extraPackages = with pkgs; [
       git
       gh
